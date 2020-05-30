@@ -25,6 +25,10 @@ function hashInput(str) {
 	let job = []
 	let candidate = []
 	const middle = Math.floor(inputArr.length / 2)
+	/*
+	assign each element of jobs list and candidates list a
+	weight of value
+	*/
 	for (let i = 0; i < inputArr.length; i++) {
 		let helper = {}
 		let weightJob = inputArr[i].length - 1
@@ -60,6 +64,10 @@ function hashInput(str) {
 			}
 		}
 	}
+	/*
+	return an object containing both jobs lists and 
+	candidates lists
+	*/
 	let nodes = {
 		jobs: job,
 		candidates: candidate
@@ -67,18 +75,24 @@ function hashInput(str) {
 	return nodes
 }
 
+/*
+create a function that updates an input that returns a new input
+*/
 function updateInput(input, candidate, job) {
 	for (let i = 0; i < input.jobs.length; i++) {
 		let jobKey = Object.keys(input.jobs[i])[0]
 		let candidateKey = Object.keys(input.candidates[i])[0]
+		/*
+		loop through both jobs lists and candidates lists, if a given candidate and job
+		from an argument is found, delete it because both of them is a pair already and 
+		each of the element have 1-1 relation
+		*/
 		for (let j = 0; j < input.candidates[i][candidateKey].length; j++) {
 			let conditionC = false
-
 			if(input.candidates[i][candidateKey] && input.candidates[i][candidateKey][j].value == job[0]) {
 				input.candidates[i][candidateKey].splice(j, 1)
 				conditionC = true
 			}
-			
 			if (conditionC) {
 				j--
 			}
@@ -86,25 +100,30 @@ function updateInput(input, candidate, job) {
 
 		for (let k = 0; k < input.jobs[i][jobKey].length; k++) {
 			let conditionJ = false
-
 			if(input.jobs[i][jobKey][k] && input.jobs[i][jobKey][k].value == candidate ) {
 				input.jobs[i][jobKey].splice(k, 1)
 				conditionJ = true
 			}
-			
 			if(conditionJ) {
 				k--
 			}
 		}
 	}
-
+	/*
+	delete a lists for a given candidate and job from the argument
+	*/
 	let indexC = input.candidates.findIndex(el => Object.keys(el) == candidate)
 	let indexJ = input.jobs.findIndex(el => Object.keys(el) == job[0])
 	input.candidates.splice(indexC, 1)
 	input.jobs.splice(indexJ, 1)
+	
 	return input
 }
 
+/*
+find maximum value from an input object. return the key of the 
+maximum value if found, else return false
+*/
 function findMax(obj, key) {
 	const arrValues = Object.values(obj[key])
 	const arrKeys = Object.keys(obj[key])
@@ -123,11 +142,20 @@ function findMax(obj, key) {
 	}
 }
 
+/*
+make function to find pair of job and candidate with an argument 
+of input, output, keyToCheck.
+*/
 function findPair(input, output, keyToCheck = null) {
 	let helper = {}
+	// base case of recursion
 	if(input.jobs.length === 0) {
 		return output
 	}
+	/*
+	if there are more than max value, check the next key of
+	the input first!
+	*/
 	let key
 	let idx
 	if(keyToCheck) {
@@ -143,7 +171,10 @@ function findPair(input, output, keyToCheck = null) {
 		key = Object.keys(input.jobs[0])
 		idx = 0
 	}
-
+	/*
+	find the weight of each job of the element in the array with
+	a corresponding candidate
+	*/
 	for (let j = 0; j < input.jobs[idx][key].length; j++) {
 		let fromJobs = input.jobs[idx][key][j]
 		const indexCandidate = input.candidates.findIndex(el => Object.keys(el) == fromJobs.value)
@@ -152,7 +183,15 @@ function findPair(input, output, keyToCheck = null) {
 		let sumWeight = fromJobs.weight + fromCandidate.weight
 		helper[key][fromJobs.value] = sumWeight	
 	}
+	/*
+	find the maximum value for each job
+	*/
 	let maxValue = findMax(helper, key)
+	/*
+	if maxValue is found, recurse with newInput, else recurse
+	with the same input and assign true to keyToCheck so the function
+	check the next key of the input
+	*/
 	if(maxValue) {
 		let newInput = updateInput(input, maxValue, key)
 		output += `${maxValue} ${key[0]}\n`
@@ -162,6 +201,9 @@ function findPair(input, output, keyToCheck = null) {
 	}
 }
 
+/*
+sort output to make in in order like c1,c2,c3,c4.
+*/
 function sortOutput(output) {
 	const outputHelperArr = output.split('\n')
 	const outputArr = outputHelperArr.map(el => el.split(' '))
