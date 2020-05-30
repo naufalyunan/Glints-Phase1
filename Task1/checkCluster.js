@@ -16,3 +16,32 @@ if(!process.argv[2]) {
 	console.log(demolition(input))
 }
 
+function checkNeighbour (arr, i, j, count) {
+	let condition = false
+	let dict = {}
+	dict[[i, j]] = true
+	let m, n
+	for(let k = i - 1; k <= i + 1; k++) {
+		if(arr[k] !== undefined) {
+			for (let l = j - 1; l <= j + 1; l++) {
+				if (arr[k][l] !== undefined) {
+					if(arr[k][l] !== '0') {
+						if(!dict[k, l]) {
+							dict[[k, l]] = true
+						}
+						count++
+						m = k
+						n = l
+						condition = true
+						arr[k][l] = '0'
+					}
+				}
+			}
+		}
+	}
+	if(condition) {
+		return checkNeighbour(arr, m, n, count)
+	} else {
+		return count++
+	}
+}
